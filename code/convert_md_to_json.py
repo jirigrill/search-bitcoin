@@ -1,14 +1,16 @@
-from textwrap import indent
-import markdown
+"""imports"""
 import json
-from bs4 import BeautifulSoup
-import html
 import os
 import re
+import markdown
+from bs4 import BeautifulSoup
 import dateparser
 
-BTCTRANSCRIPT_FOLDER = '/Users/jiri.grill/personal_projects/bitcointranscripts/'
+# TODO: update all exceptions to proper types
+
+BTCTRANSCRIPT_FOLDER = os.getenv('BTCTRANSCRIPT_FOLDER')
 ROOT_FOLDER = 'bitcointranscripts'
+OUTPUT_FOLDER = os.getenv('BTCTRANSCRIPT_OUTPUT_FOLDER')
 
 LANGUAGE_CODE_DICT = '{"en": "english", "es": "spanish", "pt": "portugese", "de": "german", "it": "italian"}'
 LANGUAGE_CODE_DICT = json.loads(LANGUAGE_CODE_DICT)
@@ -17,8 +19,6 @@ INFO_DICT = '{"name": "author", "nombre": "author", "topic": "topic", "tema": "t
     "date": "date", "día": "date", "video": "video_link", "vídeo": "video_link", "slides": "slides_link", "diapositivas": "slides_link" }'
 
 INFO_DICT = json.loads(INFO_DICT)
-
-file_path = ''
 
 def process_table(list_strings):
     """
@@ -39,7 +39,7 @@ def get_content_pointers(html_string):
 
     try:
         content_starts_at = [m.start() for m in re.finditer('<h1>', html_string)][0]
-    except:
+    except Exception:
         # if we are in this branch it means that html_string doesn't contain <h1> so everything after table_content is basically content
         # in other words content_starts_at = info_starts_at
         content_starts_at = info_starts_at
@@ -96,10 +96,15 @@ def define_language(file_path):
     """
     Defines language of the transcript
     """
+    language_code = ''
+    language = ''
     try:
         language_code = [code_candidate.lower() for code_candidate in file_path.split('.') if len(code_candidate) == 2 and code_candidate.lower() != 'md'][0]
         language = LANGUAGE_CODE_DICT[language_code]
-    except:
+    except Exception:
+        pass
+
+    if language_code == '':
         # beacuse file name doesnt contain language code setting up English as default
         language_code = 'en'
         language = 'English'
@@ -155,7 +160,6 @@ def convert_file(markdown_file, root_folder, file_path):
     # according to language dict
     markdown_file_as_json["language"] = define_language(file_path)
 
-
     # setup content pointers
     info_starts_at, content_starts_at = get_content_pointers(html_string)
 
@@ -186,27 +190,24 @@ def convert_file(markdown_file, root_folder, file_path):
         markdown_file_as_json["date"] = markdown_file_as_json["title"].split(" ")[-1][1:-1]
     try:
         markdown_file_as_json["date"] = standardise_date(markdown_file_as_json["date"])
-    except:
+    except Exception:
         markdown_file_as_json["date"] = '1900-01-01'
 
     return markdown_file_as_json
 
-all_files = 0
-processed_files = 0
+FILE_PATH = ''
 # iterates over *.md files in processed_files directory and adds them to index
 for path, subdirs, files in os.walk(BTCTRANSCRIPT_FOLDER):
     for file in files:
-        if file.endswith('md') and file.startswith('_index')==False and file not in ['LICENSE.md','README.md']:
-            all_files +=1
-            file_path = path + os.path.sep + file
-            with open(file_path, 'r') as f:
+        if file.endswith('md') and file.startswith('_index') is False and file not in ['LICENSE.md','README.md']:
+            FILE_PATH = path + os.path.sep + file
+            with open(FILE_PATH, 'r', encoding='UTF-8') as f:
                 text = f.read()
                 file_name = file
             # storing final file as json
-            #print(f"processing file {file_path}")
-            print(file_path)
+            print(f"processing file {FILE_PATH}")
             try:
-                final_json = json.dumps(convert_file(text, ROOT_FOLDER, file_path), ensure_ascii=False)
+                final_json = json.dumps(convert_file(text, ROOT_FOLDER, FILE_PATH), ensure_ascii=False)
                 # at first split file path by '.' and selects only string > 2 to avoid .md and language code (ie .es)
                 # from that selection we will only the last part to ensure that file name is in selection
                 # that selection is split by '/' and select only last part to ensure that proper file name is selected
@@ -216,14 +217,11 @@ for path, subdirs, files in os.walk(BTCTRANSCRIPT_FOLDER):
                 # after fist step: /Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning
                 # after second step: 2019-02-07-matt-corallo-rust-lightning
 
-                file_name  = [file_name.lower() for file_name in file_path.split('.') if len(file_name) > 2][-1].split('/')[-1]
+                file_name  = [file_name.lower() for file_name in FILE_PATH.split('.') if len(file_name) > 2][-1].split('/')[-1]
 
                 file_name = file_name+'-'+get_language_code(json.loads(final_json)['language'])
 
-                with open(f"/Users/jiri.grill/personal_projects/search-bitcoin/data/processed_files/{file_name}.json", "w") as outfile:
+                with open(f"{OUTPUT_FOLDER+file_name}.json", "w", encoding='UTF-8') as outfile:
                     outfile.write(final_json)
-                processed_files +=1
-            except:
+            except Exception:
                 print("file is not able to process")
-
-print(f"out of {all_files} it processed {processed_files} which is {processed_files/all_files*100}%")

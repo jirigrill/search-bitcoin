@@ -1,3 +1,5 @@
 .DS_store
 code/test.py
 data/
+.vscode/
+.pylintrc
