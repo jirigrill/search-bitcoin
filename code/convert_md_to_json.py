@@ -111,7 +111,6 @@ def standardise_date(date):
     """
     Returns standardised date in format 'YYYY-MM-DD' for given date
     """
-    #standardised_date = dateparser.parse(date, settings={'NORMALIZE': True}).strftime("%Y-%m-%d")
     standardised_date = dateparser.parse(date, settings={'TIMEZONE': 'UTC'}).strftime("%Y-%m-%d")
     return standardised_date
 
@@ -180,11 +179,11 @@ def convert_file(markdown_file, root_folder, file_path):
 
     # process date
     # in case it is not in markdown_file_as_json its parsed from title (...)
-    # in case date is not part of the title its setuup default date '1900-01-01' TODO: should it be taken at least from path?
+    # in case date is not part of the title or anywhere in info table its setup default date '1900-01-01'
+    # TODO: should it be taken at least from path?
     # in case it is not in correct format YYYY-MM-DD, it is standardised via standardise_date(date) function
     if "date" not in markdown_file_as_json:
         markdown_file_as_json["date"] = markdown_file_as_json["title"].split(" ")[-1][1:-1]
-
     try:
         markdown_file_as_json["date"] = standardise_date(markdown_file_as_json["date"])
     except:
