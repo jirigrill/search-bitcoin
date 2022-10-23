@@ -5,6 +5,10 @@ from bs4 import BeautifulSoup
 import html
 import os
 import re
+import dateparser
+
+BTCTRANSCRIPT_FOLDER = '/Users/jiri.grill/personal_projects/bitcointranscripts/'
+ROOT_FOLDER = 'bitcointranscripts'
 
 LANGUAGE_CODE_DICT = '{"en": "english", "es": "spanish", "pt": "portugese", "de": "german", "it": "italian"}'
 LANGUAGE_CODE_DICT = json.loads(LANGUAGE_CODE_DICT)
@@ -32,7 +36,13 @@ def get_content_pointers(html_string):
     Parses and returns pointer for individual content parts
     """
     info_starts_at = [m.start() for m in re.finditer('<hr />', html_string)][1]
-    content_starts_at = [m.start() for m in re.finditer('<h1>', html_string)][0]
+
+    try:
+        content_starts_at = [m.start() for m in re.finditer('<h1>', html_string)][0]
+    except:
+        # if we are in this branch it means that html_string doesn't contain <h1> so everything after table_content is basically content
+        # in other words content_starts_at = info_starts_at
+        content_starts_at = info_starts_at
 
     return info_starts_at, content_starts_at
 
@@ -99,18 +109,19 @@ def define_language(file_path):
 
 def standardise_date(date):
     """
-    TODO Returns standardised date in format 'YYYY-MM-DD' for given date
+    Returns standardised date in format 'YYYY-MM-DD' for given date
     """
-    standardised_date = True
+    #standardised_date = dateparser.parse(date, settings={'NORMALIZE': True}).strftime("%Y-%m-%d")
+    standardised_date = dateparser.parse(date, settings={'TIMEZONE': 'UTC'}).strftime("%Y-%m-%d")
     return standardised_date
 
 
-def get_btctranscript_link(file_path, language_code):
+def get_btctranscript_link(root_folder, file_path, language_code):
     """
     Returns https://btctranscripts.com link for given file_path
     """
     domain = 'https://btctranscripts.com'
-    wo_local_path = file_path.split('original_markdowns/')[1]
+    wo_local_path = file_path.split(f'{root_folder}/')[1]
     transcript_path = wo_local_path.split('.')[0]
 
     if language_code != 'en':
@@ -120,7 +131,8 @@ def get_btctranscript_link(file_path, language_code):
 
     return btctranscripts_link
 
-def convert_file(markdown_file, file_path):
+
+def convert_file(markdown_file, root_folder, file_path):
     """
     Takes markdown file and converts it into valid json
     """
@@ -144,6 +156,7 @@ def convert_file(markdown_file, file_path):
     # according to language dict
     markdown_file_as_json["language"] = define_language(file_path)
 
+
     # setup content pointers
     info_starts_at, content_starts_at = get_content_pointers(html_string)
 
@@ -153,69 +166,65 @@ def convert_file(markdown_file, file_path):
     # contacetating info_part_json into markdown_file_as_json
     markdown_file_as_json.update(info_part_json)
 
-    # original script which parsed the "content" part which resulted into "<h1>chapter title<h/1>": [<p>chapter content</p>]
-    """
-    # parsing "content" part
-    # value between <h1></h1> is dict key and value between <p><p1> is dict value
-    content_json = {}
-    for chapter in soup.prettify().split('<h1>')[1:]:
-        print(chapter)
-        chapter_title = html.unescape(chapter.strip().partition('\n')[0])
-        chapter_content = []
-        chapter_text = chapter.split('</h1>')[1].replace('</p>','').replace('\n','').split('<p>')
-        for paragraph in chapter_text:
-            if len(paragraph) > 0:
-                chapter_content.append(paragraph.strip())
-
-    # TODO how to parse and store multi-line code snippets?
-    # At the moment script produces one long string for code and doesnt reflect new lines in the code snippets
-
-    # TODO is it necessary to do something in case if chapter_text contains HTML list <ul><li>...</li><li>...</li></ul> ?
-
-    # TODO in '2022-03-03-sanket-kanjalkar-miniscript.md' in chapter text the script produces &lt;revocationpubkey&gt
-    # instead of <revocationpubkey> -> should it be solved or not?
-
-        content_json[chapter_title] = chapter_content
-
-    # adding chapter content to markdown_file_as_json
-    markdown_file_as_json["content"] = content_json
-    """
-
-    # new version which parses the "content" part and store it as "content": {<h1>chapter1 title</h1> <p>content of chapter1</p> <h1> chapter2 title</h1> <p>content of chapter2</p>}
+    # parses the "content" part and store it as "content": {<h1>chapter1 title</h1> <p>content of chapter1</p> <h1> chapter2 title</h1> <p>content of chapter2</p>}
     # everything after first <h1> is considered as content
-    # content_starts_at = html_string.find('<h1>')
+    # there could be a case where content part doesnt contain any <h1> tag. In that case everything after "info_part" is considered as content
+    # TODO: in that case should we try to parse the most critical attributes (for example video:....) from the unidentified content part?
     content_part = html_string[content_starts_at:]
 
     # adding chapter content to markdown_file_as_json
     markdown_file_as_json["content"] = content_part
 
-    # adding link to bitcoin transcript page
-    markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(file_path, get_language_code(markdown_file_as_json["language"]))
+     # adding link to bitcoin transcript page
+    markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(root_folder, file_path, get_language_code(markdown_file_as_json["language"]))
+
+    # process date
+    # in case it is not in markdown_file_as_json its parsed from title (...)
+    # in case date is not part of the title its setuup default date '1900-01-01' TODO: should it be taken at least from path?
+    # in case it is not in correct format YYYY-MM-DD, it is standardised via standardise_date(date) function
+    if "date" not in markdown_file_as_json:
+        markdown_file_as_json["date"] = markdown_file_as_json["title"].split(" ")[-1][1:-1]
+
+    try:
+        markdown_file_as_json["date"] = standardise_date(markdown_file_as_json["date"])
+    except:
+        markdown_file_as_json["date"] = '1900-01-01'
 
     return markdown_file_as_json
 
+all_files = 0
+processed_files = 0
 # iterates over *.md files in processed_files directory and adds them to index
-for path, subdirs, files in os.walk('../data/original_markdowns/'):
+for path, subdirs, files in os.walk(BTCTRANSCRIPT_FOLDER):
     for file in files:
-        if file.endswith('md') and file.startswith('_index')==False:
+        if file.endswith('md') and file.startswith('_index')==False and file not in ['LICENSE.md','README.md']:
+            all_files +=1
             file_path = path + os.path.sep + file
             with open(file_path, 'r') as f:
                 text = f.read()
                 file_name = file
             # storing final file as json
-            final_json = json.dumps(convert_file(text, file_path), ensure_ascii=False)
+            #print(f"processing file {file_path}")
+            print(file_path)
+            try:
+                final_json = json.dumps(convert_file(text, ROOT_FOLDER, file_path), ensure_ascii=False)
+                # at first split file path by '.' and selects only string > 2 to avoid .md and language code (ie .es)
+                # from that selection we will only the last part to ensure that file name is in selection
+                # that selection is split by '/' and select only last part to ensure that proper file name is selected
+                # as the last step language is attached to the end of file_name
+                #
+                # source: '/Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning.md'
+                # after fist step: /Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning
+                # after second step: 2019-02-07-matt-corallo-rust-lightning
 
-            # at first split file path by '.' and selects only string > 2 to avoid .md and language code (ie .es)
-            # from that selection we will only the last part to ensure that file name is in selection
-            # that selection is split by '/' and select only last part to ensure that proper file name is selected
-            # as the last step language is attached to the end of file_name
-            #
-            # source: '/Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning.md'
-            # after fist step: /Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning
-            # after second step: 2019-02-07-matt-corallo-rust-lightning
-            file_name  = [file_name.lower() for file_name in file_path.split('.') if len(file_name) > 2][-1].split('/')[-1]
+                file_name  = [file_name.lower() for file_name in file_path.split('.') if len(file_name) > 2][-1].split('/')[-1]
 
-            file_name = file_name+'-'+get_language_code(json.loads(final_json)['language'])
+                file_name = file_name+'-'+get_language_code(json.loads(final_json)['language'])
 
-            with open(f"/Users/jiri.grill/personal_projects/search-bitcoin/data/processed_files/{file_name}.json", "w") as outfile:
-                outfile.write(final_json)
+                with open(f"/Users/jiri.grill/personal_projects/search-bitcoin/data/processed_files/{file_name}.json", "w") as outfile:
+                    outfile.write(final_json)
+                processed_files +=1
+            except:
+                print("file is not able to process")
+
+print(f"out of {all_files} it processed {processed_files} which is {processed_files/all_files*100}%")
