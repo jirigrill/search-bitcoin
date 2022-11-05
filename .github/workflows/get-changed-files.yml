@@ -78,4 +78,4 @@ jobs:
       - name: Execute Test Script
         run: |
           echo "Store: ${{ steps.abc.outputs.added_modified }}"
-          INPUT_STORE=${{ steps.abc.outputs.added_modified }} python3 ~home/search-bitcoin/code/test2.py
+          INPUT_STORE=${{ steps.abc.outputs.added_modified }} python3 /home/search-bitcoin/code/test2.py
