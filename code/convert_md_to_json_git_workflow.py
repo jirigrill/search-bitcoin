@@ -193,22 +193,18 @@ def convert_file(markdown_file, root_folder, file_path):
 
     return markdown_file_as_json
 
-FILE_PATH = ''
-
 file_path = '/home/runner/work/search-bitcoin/search-bitcoin/'+os.environ['INPUT_STORE']
 print(f"file path: {file_path}")
 file = file_path.split('/')[-1]
-print(f"file: {file}")
 if file.endswith('md') and file.startswith('_index') is False and file not in ['LICENSE.md','README.md']:
    #FILE_PATH = path + os.path.sep + file
-    FILE_PATH = file_path
-    with open(FILE_PATH, 'r', encoding='UTF-8') as f:
+    with open(file_path, 'r', encoding='UTF-8') as f:
         text = f.read()
         file_name = file
     # storing final file as json
-    print(f"processing file {FILE_PATH}")
+    print(f"processing file {file_path}")
     try:
-        final_json = json.dumps(convert_file(text, ROOT_FOLDER, FILE_PATH), ensure_ascii=False)
+        final_json = json.dumps(convert_file(text, ROOT_FOLDER, file_path), ensure_ascii=False)
         # at first split file path by '.' and selects only string > 2 to avoid .md and language code (ie .es)
         # from that selection we will only the last part to ensure that file name is in selection
         # that selection is split by '/' and select only last part to ensure that proper file name is selected
@@ -218,7 +214,7 @@ if file.endswith('md') and file.startswith('_index') is False and file not in ['
         # after fist step: /Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning
         # after second step: 2019-02-07-matt-corallo-rust-lightning
 
-        file_name  = [file_name.lower() for file_name in FILE_PATH.split('.') if len(file_name) > 2][-1].split('/')[-1]
+        file_name  = [file_name.lower() for file_name in file_path.split('.') if len(file_name) > 2][-1].split('/')[-1]
 
         file_name = file_name+'-'+get_language_code(json.loads(final_json)['language'])
 
