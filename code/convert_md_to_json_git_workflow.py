@@ -195,7 +195,7 @@ def convert_file(markdown_file, root_folder, file_path):
 
 FILE_PATH = ''
 
-file_path = "../../"+str(os.environ['INPUT_STORE'])
+file_path = os.environ['INPUT_STORE']
 file = file_path.split('/')[-1]
 print(f"file path: {file_path}")
 print(f"file: {file}")
