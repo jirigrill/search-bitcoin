@@ -195,9 +195,9 @@ def convert_file(markdown_file, root_folder, file_path):
 
 FILE_PATH = ''
 
-file_path = os.environ['INPUT_STORE']
-file = file_path.split('/')[-1]
+file_path = '/home/runner/work/search-bitcoin/search-bitcoin/'+os.environ['INPUT_STORE']
 print(f"file path: {file_path}")
+file = file_path.split('/')[-1]
 print(f"file: {file}")
 if file.endswith('md') and file.startswith('_index') is False and file not in ['LICENSE.md','README.md']:
    #FILE_PATH = path + os.path.sep + file
