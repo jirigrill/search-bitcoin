@@ -76,7 +76,7 @@ jobs:
           echo "${{ steps.abc.outputs.added_modified }}"
 
       - name: Execute Test Script
-        working-directory: code./
+        working-directory: code/
         run: |
           ls -la
           echo "Store: ${{ steps.abc.outputs.added_modified }}"
