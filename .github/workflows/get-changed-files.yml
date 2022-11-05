@@ -1,6 +1,39 @@
-- id: files
-  uses: jitterbit/get-changed-files@v1
-- run: |
-    for changed_file in ${{ steps.files.outputs.all }}; do
-      echo "Do something with this ${changed_file}."
-    done
+# This is a basic workflow to help you get started with Actions
+name: get-changed-files
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches:
+      - 'main'
+    paths:
+      - '**.md'
+      - '!**/README.md'
+      - '!**/LICENSE.md'
+      - '!**/_index*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: jitterbit/get-changed-files@v1
+        id: abc
+        with:
+          format: space-delimited
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Printing
+        run: |
+          echo "All:"
+          echo "${{ steps.abc.outputs.all }}"
+          echo "Added:"
+          echo "${{ steps.abc.outputs.added }}"
+          echo "Removed:"
+          echo "${{ steps.abc.outputs.removed }}"
+          echo "Renamed:"
+          echo "${{ steps.abc.outputs.renamed }}"
+          echo "Modified:"
+          echo "${{ steps.abc.outputs.modified }}"
+          echo "Added+Modified:"
+          echo "${{ steps.abc.outputs.added_modified }}"
