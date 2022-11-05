@@ -15,11 +15,12 @@ jobs:
         with:
           format: space-delimited
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup Python
+      - name: setup python
         uses: actions/setup-python@v2.2.2
         with:
           python-version: 3.8
-      - name: Execute Test Script
+      - name: convert markdown to json
         working-directory: code/
         run: |
+          ls -la
           INPUT_STORE=${{ steps.abc.outputs.added_modified }} python3 convert_md_to_json_git_workflow.py
