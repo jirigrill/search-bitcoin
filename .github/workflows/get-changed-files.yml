@@ -22,6 +22,7 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: convert markdown to json
-        working-directory: code/
+        #working-directory: code/
         run: |
+          ls -d home/*
           INPUT_STORE=${{ steps.abc.outputs.added_modified }} python3 convert_md_to_json_git_workflow.py
