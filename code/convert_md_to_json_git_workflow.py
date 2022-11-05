@@ -8,7 +8,7 @@ import dateparser
 
 # TODO: update all exceptions to proper types
 
-ROOT_FOLDER = 'bitcointranscripts'
+ROOT_FOLDER = 'search-bitcoin'
 
 LANGUAGE_CODE_DICT = '{"en": "english", "es": "spanish", "pt": "portugese", "de": "german", "it": "italian"}'
 LANGUAGE_CODE_DICT = json.loads(LANGUAGE_CODE_DICT)
@@ -177,7 +177,7 @@ def convert_file(markdown_file, root_folder, file_path):
     markdown_file_as_json["content"] = content_part
 
      # adding link to bitcoin transcript page
-    markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(root_folder, file_path, get_language_code(markdown_file_as_json["language"]))
+    #markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(root_folder, file_path, get_language_code(markdown_file_as_json["language"]))
 
     # process date
     # in case it is not in markdown_file_as_json its parsed from title (...)
