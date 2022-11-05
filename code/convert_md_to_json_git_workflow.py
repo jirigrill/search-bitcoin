@@ -203,24 +203,24 @@ if file.endswith('md') and file.startswith('_index') is False and file not in ['
         file_name = file
     # storing final file as json
     print(f"processing file {file_path}")
-    try:
-        final_json = json.dumps(convert_file(text, ROOT_FOLDER, file_path), ensure_ascii=False)
-        # at first split file path by '.' and selects only string > 2 to avoid .md and language code (ie .es)
-        # from that selection we will only the last part to ensure that file name is in selection
-        # that selection is split by '/' and select only last part to ensure that proper file name is selected
-        # as the last step language is attached to the end of file_name
-        #
-        # source: '/Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning.md'
-        # after fist step: /Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning
-        # after second step: 2019-02-07-matt-corallo-rust-lightning
+#try:
+    final_json = json.dumps(convert_file(text, ROOT_FOLDER, file_path), ensure_ascii=False)
+    # at first split file path by '.' and selects only string > 2 to avoid .md and language code (ie .es)
+    # from that selection we will only the last part to ensure that file name is in selection
+    # that selection is split by '/' and select only last part to ensure that proper file name is selected
+    # as the last step language is attached to the end of file_name
+    #
+    # source: '/Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning.md'
+    # after fist step: /Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning
+    # after second step: 2019-02-07-matt-corallo-rust-lightning
 
-        file_name  = [file_name.lower() for file_name in file_path.split('.') if len(file_name) > 2][-1].split('/')[-1]
+    file_name  = [file_name.lower() for file_name in file_path.split('.') if len(file_name) > 2][-1].split('/')[-1]
 
-        file_name = file_name+'-'+get_language_code(json.loads(final_json)['language'])
+    file_name = file_name+'-'+get_language_code(json.loads(final_json)['language'])
 
-        print(final_json)
+    print(final_json)
 
-    except Exception:
-        print("file is not able to process")
+    #except Exception:
+    #   print("file is not able to process")
 else:
     print('file is not markdown type')
