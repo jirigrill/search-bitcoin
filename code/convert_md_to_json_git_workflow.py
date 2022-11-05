@@ -1,6 +1,7 @@
 """imports"""
 import json
 import os
+import sys
 import re
 import markdown
 from bs4 import BeautifulSoup
@@ -193,7 +194,7 @@ def convert_file(markdown_file, root_folder, file_path):
 
     return markdown_file_as_json
 
-print(os.environ['INPUT_STORE'])
+print(f'Number of arguments:, {len(sys.argv)}, arguments.')
 file_path = '/home/runner/work/search-bitcoin/search-bitcoin/'+os.environ['INPUT_STORE']
 print(f"file path: {file_path}")
 file = file_path.split('/')[-1]

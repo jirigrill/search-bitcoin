@@ -24,4 +24,4 @@ jobs:
       - name: convert markdown to json
         #working-directory: code/
         run: |
-          INPUT_STORE=${{ steps.abc.outputs.added_modified }} python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_md_to_json_git_workflow.py
+          python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_md_to_json_git_workflow.py ${{ steps.abc.outputs.added_modified }}
