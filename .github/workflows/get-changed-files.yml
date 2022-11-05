@@ -56,6 +56,10 @@ jobs:
         with:
           format: space-delimited
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Python
+        uses: actions/setup-python@v2.2.2
+        with:
+          python-version: 3.8
       - name: Printing
         run: |
           echo "All:"
@@ -70,3 +74,8 @@ jobs:
           echo "${{ steps.abc.outputs.modified }}"
           echo "Added+Modified:"
           echo "${{ steps.abc.outputs.added_modified }}"
+
+      - name: Execute Test Script
+        run: |
+          echo "Store: ${{ steps.abc.outputs.added_modified }}"
+          INPUT_STORE=${{ steps.abc.outputs.added_modified }} python3 /code/test2.py
