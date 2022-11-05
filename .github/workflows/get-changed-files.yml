@@ -44,7 +44,7 @@ name: get-changed-files
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test:
