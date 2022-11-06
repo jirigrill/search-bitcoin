@@ -1,4 +1,6 @@
-"""imports"""
+"""
+converts markdown file into json
+"""
 import json
 import os
 import sys
@@ -8,8 +10,6 @@ from bs4 import BeautifulSoup
 import dateparser
 
 # TODO: update all exceptions to proper types
-
-
 
 LANGUAGE_CODE_DICT = '{"en": "english", "es": "spanish", "pt": "portugese", "de": "german", "it": "italian"}'
 LANGUAGE_CODE_DICT = json.loads(LANGUAGE_CODE_DICT)
