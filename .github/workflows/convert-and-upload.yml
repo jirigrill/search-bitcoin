@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: jitterbit/get-changed-files@v1
-        id: abc
+        id: changed_files
         with:
           format: space-delimited
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -23,7 +23,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: convert markdown to json and upload to elastic
         run: |
-          python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_to_json_upload_to_elastic.py ${{ steps.abc.outputs.added_modified }}
+          python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_to_json_upload_to_elastic.py ${{ steps.changed_files.outputs.added_modified }}
         env:
             BTCTRANSCRIPTS_PASSWORD: ${{ secrets.BTCTRANSCRIPTS_PASSWORD }}
             BTCTRANSCRIPTS_SERVER_URI: ${{ secrets.BTCTRANSCRIPTS_SERVER_URI }}
