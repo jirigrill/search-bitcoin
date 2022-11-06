@@ -3,3 +3,4 @@ code/test.py
 data/
 .vscode/
 .pylintrc
+__pycache__/

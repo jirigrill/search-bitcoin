@@ -2,8 +2,6 @@
 converts markdown file into json
 """
 import json
-import os
-import sys
 import re
 import markdown
 from bs4 import BeautifulSoup
@@ -119,13 +117,12 @@ def standardise_date(date):
     return standardised_date
 
 
-def get_btctranscript_link(root_folder, file_path, language_code):
+def get_btctranscript_link(file_path, language_code):
     """
     Returns https://btctranscripts.com link for given file_path
     """
     domain = 'https://btctranscripts.com'
-    wo_local_path = file_path.split(f'{root_folder}/')[1]
-    transcript_path = wo_local_path.split('.')[0]
+    transcript_path = file_path.split('.')[0]
 
     if language_code != 'en':
         btctranscripts_link = domain+'/'+language_code+'/'+transcript_path
@@ -135,12 +132,15 @@ def get_btctranscript_link(root_folder, file_path, language_code):
     return btctranscripts_link
 
 
-def convert_file(markdown_file, root_folder, file_path):
+def convert_file(file_path):
     """
     Takes markdown file and converts it into valid json
     """
+    with open(file_path, 'r', encoding='UTF-8') as file:
+        file_to_convert = file.read()
+
     markdown_file_as_json = {}
-    html_string = markdown.markdown(markdown_file)
+    html_string = markdown.markdown(file_to_convert)
     soup = BeautifulSoup(html_string, features="html.parser")
 
     # parsing first <p></p> to get table items from markdown file
@@ -178,7 +178,7 @@ def convert_file(markdown_file, root_folder, file_path):
     markdown_file_as_json["content"] = content_part
 
      # adding link to bitcoin transcript page
-    #markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(root_folder, file_path, get_language_code(markdown_file_as_json["language"]))
+    markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(file_path, get_language_code(markdown_file_as_json["language"]))
 
     # process date
     # in case it is not in markdown_file_as_json its parsed from title (...)
