@@ -20,7 +20,7 @@ def create_document_hashed_id(document_id):
 
 
 
-def upload_to_elastic(file,transcript_json):
+def upload_to_elastic(transcript_json):
     """
     Creates elasticsearch client and uploads transcript_json there
     """
