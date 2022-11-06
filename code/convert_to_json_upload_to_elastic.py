@@ -5,7 +5,6 @@ takes all uploaded and modified files and if they are in the right format,
 import sys
 import convert_md_to_json_git_workflow
 import load_jsons_to_elasticsearch_git_workflow
-import elasticsearch8 as elasticsearch
 
 # process all files as arguments via for loop
 for file in sys.argv[1:]:
@@ -17,28 +16,16 @@ for file in sys.argv[1:]:
         and file not in ["LICENSE.md", "README.md"]
     ):
         print(f"file: '{file}' will be converted to JSON.")
-        try:
-            file_as_json = convert_md_to_json_git_workflow.convert_file(file)
-            print(f"file: '{file}' is converted to JSON.")
+        file_as_json = convert_md_to_json_git_workflow.convert_file(file)
+       
 
-            print(f"file: '{file}' will be uploaded to JSON.")
-            try:
-                elastic_response = (
-                    load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(
-                        file_as_json
-                    )
-                )
+        print(f"file: '{file}' will be uploaded to JSON.")
+        elastic_response = (load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(file_as_json))
 
-                if elastic_response in ["created", "updated"]:
-                    print(f"file: '{file}' is uploaded to elastic.")
-                else:
-                    print(f"file: '{file}' hasn't been able to upload.")
-            except elasticsearch.AuthorizationException as e:
-                print(f"file: '{file}' hasn't been able to uploaded")
-                print(e)
-
-        except Exception:
-            print(f"file: '{file}' hasn't been able to convert.")
+        if elastic_response in ["created", "updated"]:
+            print(f"file: '{file}' is uploaded to elastic.")
+        else:
+            print(f"file: '{file}' hasn't been able to upload.")
 
     # the converted json uploads to elastic
     else:

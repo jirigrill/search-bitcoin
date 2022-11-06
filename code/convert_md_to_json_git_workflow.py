@@ -136,60 +136,64 @@ def convert_file(file_path):
     """
     Takes markdown file and converts it into valid json
     """
-    with open(file_path, 'r', encoding='UTF-8') as file:
-        file_to_convert = file.read()
-
-    markdown_file_as_json = {}
-    html_string = markdown.markdown(file_to_convert)
-    soup = BeautifulSoup(html_string, features="html.parser")
-
-    # parsing first <p></p> to get table items from markdown file
-    table_content_list = soup.p.contents[0].split('\n')
-    table_content_dict = process_table(table_content_list)
-
-    # adding author to the table dict
-    # as default it takes the first part from transcript title
-    # later if in "info part" is author clearly defined its updated
-    table_content_dict["author"] = table_content_dict["title"].split("-")[0].strip()
-
-    # table content was parsed so its possible to append into markdown_file_as_json
-    markdown_file_as_json.update(table_content_dict)
-
-    # setting up English as default language and update it in case file name contains language abbreviation
-    # according to language dict
-    markdown_file_as_json["language"] = define_language(file_path)
-
-    # setup content pointers
-    info_starts_at, content_starts_at = get_content_pointers(html_string)
-
-    # parse the part between <hr/> and first <h1> -> it is the part where author, video link etc is - lets call it info
-    info_part_json = parse_info_part(html_string, info_starts_at, content_starts_at)
-
-    # contacetating info_part_json into markdown_file_as_json
-    markdown_file_as_json.update(info_part_json)
-
-    # parses the "content" part and store it as "content": {<h1>chapter1 title</h1> <p>content of chapter1</p> <h1> chapter2 title</h1> <p>content of chapter2</p>}
-    # everything after first <h1> is considered as content
-    # there could be a case where content part doesnt contain any <h1> tag. In that case everything after "info_part" is considered as content
-    # TODO: in that case should we try to parse the most critical attributes (for example video:....) from the unidentified content part?
-    content_part = html_string[content_starts_at:]
-
-    # adding chapter content to markdown_file_as_json
-    markdown_file_as_json["content"] = content_part
-
-     # adding link to bitcoin transcript page
-    markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(file_path, get_language_code(markdown_file_as_json["language"]))
-
-    # process date
-    # in case it is not in markdown_file_as_json its parsed from title (...)
-    # in case date is not part of the title or anywhere in info table its setup default date '1900-01-01'
-    # TODO: should it be taken at least from path?
-    # in case it is not in correct format YYYY-MM-DD, it is standardised via standardise_date(date) function
-    if "date" not in markdown_file_as_json:
-        markdown_file_as_json["date"] = markdown_file_as_json["title"].split(" ")[-1][1:-1]
     try:
-        markdown_file_as_json["date"] = standardise_date(markdown_file_as_json["date"])
-    except Exception:
-        markdown_file_as_json["date"] = '1900-01-01'
+        file_to_convert = open(file_path, encoding='UTF-8').read()
 
-    return markdown_file_as_json
+        markdown_file_as_json = {}
+        html_string = markdown.markdown(file_to_convert)
+        soup = BeautifulSoup(html_string, features="html.parser")
+
+        # parsing first <p></p> to get table items from markdown file
+        table_content_list = soup.p.contents[0].split('\n')
+        table_content_dict = process_table(table_content_list)
+
+        # adding author to the table dict
+        # as default it takes the first part from transcript title
+        # later if in "info part" is author clearly defined its updated
+        table_content_dict["author"] = table_content_dict["title"].split("-")[0].strip()
+
+        # table content was parsed so its possible to append into markdown_file_as_json
+        markdown_file_as_json.update(table_content_dict)
+
+        # setting up English as default language and update it in case file name contains language abbreviation
+        # according to language dict
+        markdown_file_as_json["language"] = define_language(file_path)
+
+        # setup content pointers
+        info_starts_at, content_starts_at = get_content_pointers(html_string)
+
+        # parse the part between <hr/> and first <h1> -> it is the part where author, video link etc is - lets call it info
+        info_part_json = parse_info_part(html_string, info_starts_at, content_starts_at)
+
+        # contacetating info_part_json into markdown_file_as_json
+        markdown_file_as_json.update(info_part_json)
+
+        # parses the "content" part and store it as "content": {<h1>chapter1 title</h1> <p>content of chapter1</p> <h1> chapter2 title</h1> <p>content of chapter2</p>}
+        # everything after first <h1> is considered as content
+        # there could be a case where content part doesnt contain any <h1> tag. In that case everything after "info_part" is considered as content
+        # TODO: in that case should we try to parse the most critical attributes (for example video:....) from the unidentified content part?
+        content_part = html_string[content_starts_at:]
+
+        # adding chapter content to markdown_file_as_json
+        markdown_file_as_json["content"] = content_part
+
+        # adding link to bitcoin transcript page
+        markdown_file_as_json["btctranscripts_link"] = get_btctranscript_link(file_path, get_language_code(markdown_file_as_json["language"]))
+        # process date
+        # in case it is not in markdown_file_as_json its parsed from title (...)
+        # in case date is not part of the title or anywhere in info table its setup default date '1900-01-01'
+        # TODO: should it be taken at least from path?
+        # in case it is not in correct format YYYY-MM-DD, it is standardised via standardise_date(date) function
+        if "date" not in markdown_file_as_json:
+            markdown_file_as_json["date"] = markdown_file_as_json["title"].split(" ")[-1][1:-1]
+        try:
+            markdown_file_as_json["date"] = standardise_date(markdown_file_as_json["date"])
+        except Exception:
+            markdown_file_as_json["date"] = '1900-01-01'
+
+        print(f"file: '{file_path}' is converted to JSON.")
+        return markdown_file_as_json
+
+    except Exception:
+        print(f"file: '{file_path}' hasn't been able to convert.")
+        raise
