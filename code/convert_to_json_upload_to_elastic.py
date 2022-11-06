@@ -10,7 +10,7 @@ ROOT_FOLDER = "search-bitcoin"
 # process all files as arguments via for loop
 for file in sys.argv[1:]:
     print(f"processing file: '{file}'.")
-    print(f"markdown file: {file.rsplit('/', maxsplit=1)[0]}")
+    print(f"markdown file: {file.rsplit('/', maxsplit=1)[-1]}")
     # in case the file is right converts it into json
     if (
         file.endswith("md")

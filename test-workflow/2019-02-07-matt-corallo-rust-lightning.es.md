@@ -6,7 +6,7 @@ categories: ['conferencia']
 tags: ['lightning']
 ---
 
-Matt Corallo12
+Matt Corallo
 
 Lightning flexible en Rust
 
