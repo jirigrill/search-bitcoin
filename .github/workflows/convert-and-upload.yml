@@ -23,7 +23,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: convert markdown to json and upload to elastic
         run: |
-          python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_to_json_upload_to_elastic.py ${{ steps.changed.outputs.added_modified }}
+          python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_to_json_upload_to_elastic.py ${{ steps.changed_files.outputs.added_modified }}
         env:
             BTCTRANSCRIPTS_PASSWORD: ${{ secrets.BTCTRANSCRIPTS_PASSWORD }}
             BTCTRANSCRIPTS_SERVER_URI: ${{ secrets.BTCTRANSCRIPTS_SERVER_URI }}
