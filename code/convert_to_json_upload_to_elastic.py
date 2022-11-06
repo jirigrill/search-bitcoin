@@ -19,7 +19,7 @@ for file in sys.argv[1:]:
     ):
         print(f"file: '{file}' will be converted to JSON.")
         file_as_json = convert_md_to_json_git_workflow.convert_file(
-            root_folder=ROOT_FOLDER, file_path=file, markdown_file=file.rsplit('/', maxsplit=1)[0]
+            root_folder=ROOT_FOLDER, file_path=file, markdown_file=file.rsplit('/', maxsplit=1)[-1]
         )
     # the converted json uploads to elastic
     else:
