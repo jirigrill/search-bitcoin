@@ -1,4 +1,4 @@
-name: get-changed-files
+name: convert-and-upload
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test:
+  convert-and-upload:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
