@@ -5,7 +5,7 @@ categories: ['conference']
 tags: ['P2P', 'mempool']
 ---
 
-Name: Gloria Zhao 21
+Name: Gloria Zhao
 
 Topic: Transaction Relay Policy for L2 Developers
 
