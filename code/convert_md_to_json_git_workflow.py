@@ -9,7 +9,7 @@ import dateparser
 
 # TODO: update all exceptions to proper types
 
-ROOT_FOLDER = 'search-bitcoin'
+
 
 LANGUAGE_CODE_DICT = '{"en": "english", "es": "spanish", "pt": "portugese", "de": "german", "it": "italian"}'
 LANGUAGE_CODE_DICT = json.loads(LANGUAGE_CODE_DICT)
@@ -193,35 +193,3 @@ def convert_file(markdown_file, root_folder, file_path):
         markdown_file_as_json["date"] = '1900-01-01'
 
     return markdown_file_as_json
-
-for file in sys.argv[1:]:
-    file_path = '/home/runner/work/search-bitcoin/search-bitcoin/'+file
-    file_name = file_path.split('/')[-1]
-    if file.endswith('md') and file.startswith('_index') is False and file not in ['LICENSE.md','README.md']:
-    #FILE_PATH = path + os.path.sep + file
-        with open(file_path, 'r', encoding='UTF-8') as f:
-            text = f.read()
-            #file_name = file
-        # storing final file as json
-        print(f"processing file {file_path}")
-    #try:
-        final_json = json.dumps(convert_file(text, ROOT_FOLDER, file_path), ensure_ascii=False)
-        # at first split file path by '.' and selects only string > 2 to avoid .md and language code (ie .es)
-        # from that selection we will only the last part to ensure that file name is in selection
-        # that selection is split by '/' and select only last part to ensure that proper file name is selected
-        # as the last step language is attached to the end of file_name
-        #
-        # source: '/Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning.md'
-        # after fist step: /Users/jiri.grill/personal_projects/search-bitcoin/data/original_markdowns/advancing-bitcoin/2019/2019-02-07-matt-corallo-rust-lightning
-        # after second step: 2019-02-07-matt-corallo-rust-lightning
-
-        file_name  = [file_name.lower() for file_name in file_path.split('.') if len(file_name) > 2][-1].split('/')[-1]
-
-        file_name = file_name+'-'+get_language_code(json.loads(final_json)['language'])
-
-        print(final_json)
-
-        #except Exception:
-        #   print("file is not able to process")
-    else:
-        print('file is not markdown type')
