@@ -22,17 +22,23 @@ for file in sys.argv[1:]:
 
             print(f"file: '{file}' will be uploaded to JSON.")
             try:
-                load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(file_as_json)
-                print(f"file: '{file}' is uploaded to elastic.")
+                elastic_response = (
+                    load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(
+                        file_as_json
+                    )
+                )
+
+                if elastic_response in ["created", "updated"]:
+                    print(f"file: '{file}' is uploaded to elastic.")
+                else:
+                    print(f"file: '{file}' hasn't been able to upload.")
             except Exception:
-                print(f"file: '{file}' hasn't been able to upload.")
+                print(
+                    f"file: '{file}' hasn't been able to upload, because there was some issue with elastic"
+                )
 
         except Exception:
             print(f"file: '{file}' hasn't been able to convert.")
-
-
-
-
 
     # the converted json uploads to elastic
     else:

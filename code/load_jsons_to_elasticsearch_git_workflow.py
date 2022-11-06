@@ -31,4 +31,5 @@ def upload_to_elastic(transcript_json):
 
     resp = _es.index(index='btctranscripts', id = TRANSCRIPT_ID, document=transcript_json)
     print(f"elastic response: {resp['result']}")
+    return resp['result']
 
