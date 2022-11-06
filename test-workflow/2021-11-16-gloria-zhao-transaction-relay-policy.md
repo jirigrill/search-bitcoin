@@ -17,7 +17,7 @@ Video: <https://www.youtube.com/watch?v=fbWSQvJjKFs>
 
 Slides: <https://github.com/glozow/bitcoin-notes/blob/master/Tx%20Relay%20Policy%20for%20L2%20Devs%20-%20Adopting%20Bitcoin%202021.pdf>
 
-# Intro12
+# Intro
 
 Hi I’m Gloria, I work on Bitcoin Core at Brink. Today I am going to talk a bit about mempool policy and why you cannot always expect your transactions to propagate or your fee bumps to work. What we are doing to try to resolve stuff like that. This talk is for those of you who find the mempool a bit murky or unstable or unpredictable. You are not really sure if it is an interface you are comfortable building an application on top of. I would guess that this most of you. Hopefully today we can make the mempool a bit more clear. My goal is to be as empathetic as possible when it comes to transaction propagation limitations. I am going to try to bring a perspective of a Bitcoin protocol developer, how we reason about mempool and transaction relay. I am going to define what policy is, how we think about it, why we have certain policies and define pinning. I will go over some known limitations that we have, maybe clear up some misconceptions about what attack vectors are possible. I’ll mention a specific Lightning attack. My goal is for us to walk out of this today as friends so we can start a conversation about how to build a Layer 1 and Layer 2 with a seamless bridge between them.
 
