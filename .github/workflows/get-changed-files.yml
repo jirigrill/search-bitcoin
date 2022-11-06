@@ -24,3 +24,7 @@ jobs:
       - name: convert markdown to json and upload to elastic
         run: |
           python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_to_json_upload_to_elastic.py ${{ steps.abc.outputs.added_modified }}
+        env:
+            BTCTRANSCRIPTS_PASSWORD: ${{ secrets.BTCTRANSCRIPTS_PASSWORD }}
+            BTCTRANSCRIPTS_SERVER_URI: ${{ secrets.BTCTRANSCRIPTS_SERVER_URI }}
+            BTCTRANSCRIPTS_USERNAME: ${{ secrets.BTCTRANSCRIPTS_USERNAME }}
