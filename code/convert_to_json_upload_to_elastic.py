@@ -21,11 +21,11 @@ for file in sys.argv[1:]:
             print(f"file: '{file}' is converted to JSON.")
 
             print(f"file: '{file}' will be uploaded to JSON.")
-            try:
-                load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(file=file, transcript_json=file_as_json)
-                print(f"file: '{file}' is uploaded to elastic.")
-            except Exception:
-                print(f"file: '{file}' hasn't been able to upload.")
+            #try:
+            load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(file=file, transcript_json=file_as_json)
+            #    print(f"file: '{file}' is uploaded to elastic.")
+            #except Exception:
+            #    print(f"file: '{file}' hasn't been able to upload.")
 
         except Exception:
             print(f"file: '{file}' hasn't been able to convert.")

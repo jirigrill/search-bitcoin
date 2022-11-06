@@ -1,8 +1,6 @@
 """
 uploads json to elastic
 """
-from pathlib import Path
-import json
 import hashlib
 import os
 from elasticsearch8 import Elasticsearch
