@@ -22,6 +22,5 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: convert markdown to json
-        #working-directory: code/
         run: |
-          python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_md_to_json_git_workflow.py ${{ steps.abc.outputs.added_modified }}
+          python3 /home/runner/work/search-bitcoin/search-bitcoin/code/convert_to_json_upload_to_elastic.py ${{ steps.abc.outputs.added_modified }}
