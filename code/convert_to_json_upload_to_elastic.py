@@ -19,6 +19,8 @@ for file in sys.argv[1:]:
         try:
             file_as_json = convert_md_to_json_git_workflow.convert_file(file)
             print(f"file: '{file}' is converted to JSON.")
+        except Exception:
+            print(f"file: '{file}' hasn't been able to convert.")
 
             print(f"file: '{file}' will be uploaded to JSON.")
             #try:
@@ -27,8 +29,7 @@ for file in sys.argv[1:]:
             #except Exception:
             #    print(f"file: '{file}' hasn't been able to upload.")
 
-        except Exception:
-            print(f"file: '{file}' hasn't been able to convert.")
+
 
     # the converted json uploads to elastic
     else:
