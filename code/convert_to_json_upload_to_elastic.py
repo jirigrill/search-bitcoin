@@ -5,6 +5,7 @@ takes all uploaded and modified files and if they are in the right format,
 import sys
 import convert_md_to_json_git_workflow
 import load_jsons_to_elasticsearch_git_workflow
+import elasticsearch8 as elasticsearch
 
 # process all files as arguments via for loop
 for file in sys.argv[1:]:
@@ -32,10 +33,9 @@ for file in sys.argv[1:]:
                     print(f"file: '{file}' is uploaded to elastic.")
                 else:
                     print(f"file: '{file}' hasn't been able to upload.")
-            except Exception:
-                print(
-                    f"file: '{file}' hasn't been able to upload, because there was some issue with elastic"
-                )
+            except elasticsearch.AuthorizationException as e:
+                print(f"file: '{file}' hasn't been able to uploaded")
+                print(e)
 
         except Exception:
             print(f"file: '{file}' hasn't been able to convert.")

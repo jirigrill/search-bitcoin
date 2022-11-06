@@ -25,7 +25,7 @@ def upload_to_elastic(transcript_json):
     Creates elasticsearch client and uploads transcript_json there
     """
     # creates client for elasticsearch
-    _es = Elasticsearch(os.getenv('BTCTRANSCRIPTS_SERVER_URI'), basic_auth=(os.getenv('BTCTRANSCRIPTS_USERNAME'),os.getenv('BTCTRANSCRIPTS_PASSWORD')))
+    _es = Elasticsearch(os.getenv('BTCTRANSCRIPTS_SERVER_URI'), basic_auth=(os.getenv('BTCTRANSCRIPTS_USERNAME2'),os.getenv('BTCTRANSCRIPTS_PASSWORD')))
 
     TRANSCRIPT_ID = create_document_hashed_id(transcript_json['title']+' '+transcript_json['language'])
 
