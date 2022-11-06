@@ -16,18 +16,21 @@ for file in sys.argv[1:]:
         and file not in ["LICENSE.md", "README.md"]
     ):
         print(f"file: '{file}' will be converted to JSON.")
-        #try:
-        file_as_json = convert_md_to_json_git_workflow.convert_file(file)
-        print(f"file: '{file}' is converted to JSON.")
-        #except Exception:
-        print(f"file: '{file}' hasn't been able to convert.")
+        try:
+            file_as_json = convert_md_to_json_git_workflow.convert_file(file)
+            print(f"file: '{file}' is converted to JSON.")
 
-        print(f"file: '{file}' will be uploaded to JSON.")
-        #try:
-        load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(file_as_json)
-            #    print(f"file: '{file}' is uploaded to elastic.")
-            #except Exception:
-            #    print(f"file: '{file}' hasn't been able to upload.")
+            print(f"file: '{file}' will be uploaded to JSON.")
+            try:
+                load_jsons_to_elasticsearch_git_workflow.upload_to_elastic(file_as_json)
+                print(f"file: '{file}' is uploaded to elastic.")
+            except Exception:
+                print(f"file: '{file}' hasn't been able to upload.")
+
+        except Exception:
+            print(f"file: '{file}' hasn't been able to convert.")
+
+
 
 
 
